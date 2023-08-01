@@ -89,62 +89,16 @@
                         data: formData,
                         dataType: 'json',
                         success: function(response) {
-                            var html = '';
-                            if (response.status === 'success') {
-                                productList = response.data;
-                                for (var i = 0; i < productList.length; i++) {
-                                    var product = productList[i];
-                                    html += '<div class = "col"><div class = "card h-100 shadow-sm">';
-                                    html += '<img src="images/' + product.Image + '" class="card-img-top" alt="..." id="prod_img"> ';
-                                    html += '<div class="card-body">';
-                                    html += '<div class="clearfix mb-3"><span class="float-start badge rounded-pill bg-info">Daraz.pk</span><span class="float-end price-hp" id="prod_price">PKR' + product.Price + '</span> </div>';
-                                    html += '<h5 class="card-title" id="prod_name">' + product.Product + '</h5>';
-                                    html += '<div class="text-center my-4"> <button class="btn btn-warning" id="addToDatabase">Add To Database</button> </div>';
-                                    html += '</div></div></div>';
-                                }
-                                $('#card').empty();
-                                $('#card').html(html);
-                            } else {
-                                $('#card').empty();
-                                html += '<div class="alert alert-danger text-center fw-bold" role="alert">' + response.data + '</div>';
-                                $('#card').html(html);
-                            }
-                            $('#daraz_product').val('');
+                            var page = 'Daraz.pk';
+                            Display(response, page);
                         },
                         error: function(x, e) {
-                            if (x.status == 0) {
-                                alert('You are offline!!\n Please Check Your Network.');
-                            } else if (x.status == 404) {
-                                alert('Requested URL not found.');
-                            } else if (x.status == 500) {
-                                alert('Internel Server Error.');
-                            } else if (e == 'parsererror') {
-                                alert('Error.\nParsing JSON Request failed.');
-                            } else if (e == 'timeout') {
-                                alert('Request Time out.');
-                            } else {
-                                alert('Unknow Error.\n' + x.responseText);
-                            }
+                            Error(x, e);
                         }
                     });
                 }
 
             });
-
-
-
-            /*------------------------- Adding product to database ---------------------------------------*/
-
-            $(document).on('click', '#addToDatabase', function() {
-                let product = $('#prod_name').text();
-                let price = $('#prod_price').text();
-                let image = $('#prod_img').attr('src');
-                let category = prompt("Please Assign Category to this Product", "Category Name");
-                alert(category);
-            });
-
-
-
 
             /*------------------------- Searching product from Ali Exp page ---------------------------------------*/
             $(document).ready(function() {
@@ -161,42 +115,11 @@
                             data: formData,
                             dataType: 'json',
                             success: function(response) {
-                                var html = '';
-                                if (response.status === 'success') {
-                                    productList = response.data;
-                                    for (var i = 0; i < productList.length; i++) {
-                                        var product = productList[i];
-                                        html += '<div class = "col"><div class = "card h-100 shadow-sm">';
-                                        html += '<img src="images/' + product.Image + '" class="card-img-top" alt="..." id="prod_img"> ';
-                                        html += '<div class="card-body">';
-                                        html += '<div class="clearfix mb-3"><span class="float-start badge rounded-pill bg-success">Ali Express</span> <span class="float-end price-hp" id="prod_price">' + product.Price + '</span> </div>';
-                                        html += '<h5 class="card-title" id="prod_name">' + product.Product + '</h5>';
-                                        html += '<div class="text-center my-4"> <button class="btn btn-warning" id="addToDatabase">Add To Database</button> </div>';
-                                        html += '</div></div></div>';
-                                    }
-                                    $('#card').empty();
-                                    $('#card').html(html);
-                                } else {
-                                    $('#card').empty();
-                                    html += '<div class="alert alert-danger text-center fw-bold" role="alert">' + response.data + '</div>';
-                                    $('#card').html(html);
-                                }
-                                $('#aliexp_product').val('');
+                                var page = 'Ali Express';
+                                Display(response, page);
                             },
                             error: function(x, e) {
-                                if (x.status == 0) {
-                                    alert('You are offline!!\n Please Check Your Network.');
-                                } else if (x.status == 404) {
-                                    alert('Requested URL not found.');
-                                } else if (x.status == 500) {
-                                    alert('Internel Server Error.');
-                                } else if (e == 'parsererror') {
-                                    alert('Error.\nParsing JSON Request failed.');
-                                } else if (e == 'timeout') {
-                                    alert('Request Time out.');
-                                } else {
-                                    alert('Unknow Error.\n' + x.responseText);
-                                }
+                                Error(x, e);
                             }
                         });
                     }
@@ -204,6 +127,90 @@
                 });
 
             });
+
+            /*------------------------- Adding product to database ---------------------------------------*/
+            // continue
+            $(document).on('click', '#addToDatabase', function() {
+                let product = $('#prod_name').text();
+                let price = $('#prod_price').text();
+                let image = $('#prod_img').attr('src');
+                let category = prompt("Please Assign Category to this Product", "Category Name");
+                if (category == 'Category Name' || category == '') {
+                    alert('Please Assign Category to add this product into the database');
+                } else {
+                    $.ajax({
+                        url: 'server/product_controller.php',
+                        method: 'POST',
+                        data: {
+                            action: add,
+                            product: product,
+                            price: price,
+                            image: image,
+                            category: category
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            var page = 'Ali Express';
+                            Display(response, page);
+                        },
+                        error: function(x, e) {
+                            Error(x, e);
+                        }
+                    });
+                }
+
+            });
+
+            /*------------------------  functions  ------------------------------*/
+            // Display function
+
+            function Display(response, page) {
+                let pkr = '';
+                var html = '';
+                if (page == 'Daraz.pk') {
+                    pkr = 'PKR';
+                }
+                if (response.status === 'success') {
+                    productList = response.data;
+                    for (var i = 0; i < productList.length; i++) {
+                        var product = productList[i];
+                        html += '<div class = "col"><div class = "card h-100 shadow-sm">';
+                        html += '<img src="images/' + product.Image + '" class="card-img-top" alt="..." id="prod_img"> ';
+                        html += '<div class="card-body">';
+                        html += '<div class="clearfix mb-3"><span class="float-start badge rounded-pill bg-info">' + page + '</span><span class="float-end price-hp" id="prod_price">' + pkr + product.Price + '</span> </div>';
+                        html += '<h5 class="card-title" id="prod_name">' + product.Product + '</h5>';
+                        html += '<div class="text-center my-4"> <button class="btn btn-warning" id="addToDatabase">Add To Database</button> </div>';
+                        html += '</div></div></div>';
+                    }
+                    $('#card').empty();
+                    $('#card').html(html);
+                } else {
+                    $('#card').empty();
+                    html += '<div class="alert alert-danger text-center fw-bold" role="alert">' + response.data + '</div>';
+                    $('#card').html(html);
+                }
+                $('#daraz_product').val('');
+                $('#aliexp_product').val('');
+            }
+
+            //error function
+
+            function Error(x, e) {
+                if (x.status == 0) {
+                    alert('You are offline!!\n Please Check Your Network.');
+                } else if (x.status == 404) {
+                    alert('Requested URL not found.');
+                } else if (x.status == 500) {
+                    alert('Internel Server Error.');
+                } else if (e == 'parsererror') {
+                    alert('Error.\nParsing JSON Request failed.');
+                } else if (e == 'timeout') {
+                    alert('Request Time out.');
+                } else {
+                    alert('Unknow Error.\n' + x.responseText);
+                }
+            }
+
             /*------------------------- End ---------------------------------------*/
         });
     </script>
