@@ -32,8 +32,8 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav">
                     <a href="home.php" class="nav-item nav-link active text-primary fw-bold">HOME</a>
-                    <a href="#" class="nav-item nav-link text-white fw-bold">ALI EXP PRODCUTS</a>
-                    <a href="#" class="nav-item nav-link text-white fw-bold">DARAZ PRODUCTS</a>
+                    <a href="AliExpressProducts.php" class="nav-item nav-link text-white fw-bold">ALI EXP PRODCUTS</a>
+                    <a href="DarazProducts.php" class="nav-item nav-link text-white fw-bold">DARAZ PRODUCTS</a>
                 </div>
                 <div class="navbar-nav ms-auto">
                     <a href="#" class="nav-item nav-link text-white fw-bold"><i class="fas fa-user" aria-hidden="true"></i>
@@ -129,12 +129,12 @@
             });
 
             /*------------------------- Adding product to database ---------------------------------------*/
-            // continue
+
             $(document).on('click', '#addToDatabase', function() {
-                let product = $('#prod_name').text();
-                let price = $('#prod_price').text();
-                let image = $('#prod_img').attr('src');
-                let category = prompt("Please Assign Category to this Product", "Category Name");
+                var product = $(this).attr('data-prod');
+                var price = $(this).attr('data-price');
+                var image = $(this).attr('data-img');
+                var category = prompt("Please Assign Category to this Product", "Category Name");
                 if (category == 'Category Name' || category == '') {
                     alert('Please Assign Category to add this product into the database');
                 } else {
@@ -142,7 +142,7 @@
                         url: 'server/product_controller.php',
                         method: 'POST',
                         data: {
-                            action: add,
+                            action: 'add',
                             product: product,
                             price: price,
                             image: image,
@@ -150,8 +150,7 @@
                         },
                         dataType: 'json',
                         success: function(response) {
-                            var page = 'Ali Express';
-                            Display(response, page);
+                            alert(response.data);
                         },
                         error: function(x, e) {
                             Error(x, e);
@@ -179,7 +178,7 @@
                         html += '<div class="card-body">';
                         html += '<div class="clearfix mb-3"><span class="float-start badge rounded-pill bg-info">' + page + '</span><span class="float-end price-hp" id="prod_price">' + pkr + product.Price + '</span> </div>';
                         html += '<h5 class="card-title" id="prod_name">' + product.Product + '</h5>';
-                        html += '<div class="text-center my-4"> <button class="btn btn-warning" id="addToDatabase">Add To Database</button> </div>';
+                        html += '<div class="text-center my-4"> <button class="btn btn-warning" id="addToDatabase" data-prod="' + product.Product + '" data-price="' + product.Price + '" data-img="' + product.Image + '">Add To Database</button> </div>';
                         html += '</div></div></div>';
                     }
                     $('#card').empty();

@@ -2,8 +2,8 @@
 include_once 'connection.php';
 include_once '../lib/parser.php';
 
-/* Handling request */
-
+//------------------------------------------------------------------------------------//
+/* Handling requests */
 if (isset($_POST['page'])) {
     if ($_POST['page'] == 'aliexp') {
         $product = $_POST['aliexp_product'];
@@ -16,9 +16,29 @@ if (isset($_POST['page'])) {
     }
 }
 
+//------------------------------------------------------------------------------------//
+/* Handling Production addition to database */
+if (isset($_POST['action'])) {
+    if ($_POST['action'] == 'add') {
+        $title = $_POST['product'];
+        $price = $_POST['price'];
+        $image = $_POST['image'];
+        $cat = $_POST['category'];
+        $page = explode("-", $image);
+        $page = $page[0];
+
+        $result = AddProduct($title, $price, $image, strtoupper($cat), strtoupper($page));
+        echo json_encode($result);
+    } else if ($_POST['action'] == 'fetch') {
+        $page = $_POST['site'];
+        $result = FetchProducts(strtoupper($page));
+        echo json_encode($result);
+    }
+}
 
 
-
+//------------------------------------------------------------------------------------//
+/* Searching from daraz page */
 function searchDaraz($prod)
 {
     $html = file_get_html('../page/daraz.html');
@@ -61,7 +81,8 @@ function searchDaraz($prod)
 }
 
 
-
+//------------------------------------------------------------------------------------//
+/* Searching from Ali Express page */
 function searchAliExp($prod)
 {
     $html = file_get_html('../page/aliexp.html');
@@ -103,4 +124,65 @@ function searchAliExp($prod)
         );
         return $response;
     }
+}
+
+
+//------------------------------------------------------------------------------------//
+/* Adding product to database */
+function AddProduct($title, $price, $image, $cat, $page)
+{
+    $con = connection();
+    try {
+        $sql = "INSERT INTO products (product, price, image, category, page )VALUES ('" . $title . "', '" . $price . "', '" . $image . "', '" . $cat . "', '" . $page . "')";
+        if ($con->query($sql) === true) {
+            $response = array(
+                'data' => 'Product Inserted to Database Successfully'
+            );
+            return $response;
+        }
+    } catch (mysqli_sql_exception $e) {
+        if ($e->getCode() == 1062) {
+            $response = array(
+                'data' => 'Product Already Available in Database!!!'
+            );
+            return $response;
+        }
+    }
+    $con->close();
+}
+
+//------------------------------------------------------------------------------------//
+/* Fetching product from database */
+function FetchProducts($page)
+{
+    $con = connection();
+    $product = array();
+    try {
+        $sql = "SELECT * FROM products WHERE page = '" . $page . "'";
+        $result = $con->query($sql);
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $temp = array();
+                $temp['Product'] = $row['product'];
+                $temp['Price'] = $row['price'];
+                $temp['Image'] = $row['image'];
+                $temp['Category'] = $row['category'];
+                $product[] = $temp;
+            }
+            $response = array(
+                'status' => 'success',
+                'data' => $product
+            );
+            return $response;
+        } else {
+            $response = array(
+                'status' => 'success',
+                'data' => 'No Product of ' . $page . ' available in Database',
+            );
+            return $response;
+        }
+    } catch (mysqli_sql_exception $e) {
+        echo $e->getMessage();
+    }
+    $con->close();
 }

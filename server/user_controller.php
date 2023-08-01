@@ -1,7 +1,7 @@
 <?php
 include_once 'connection.php';
 
-
+//----------------------------------------------------------------------//
 /* Handling Login */
 
 if (isset($_POST['submit'])) {
@@ -10,6 +10,7 @@ if (isset($_POST['submit'])) {
     login($email, $password);
 }
 
+//----------------------------------------------------------------------//
 /* Handling Logout */
 
 if (isset($_GET['action'])) {
@@ -20,25 +21,33 @@ if (isset($_GET['action'])) {
 
 
 
-
+//----------------------------------------------------------------------//
+/* Logging in */
 function login($email, $password)
 {
     $con = connection();
-    $sql = "SELECT * FROM login WHERE email='" . $email . "' AND password='" . $password . "'";
-    $result = $con->query($sql);
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $_SESSION["name"] = $row['name'];
+    try {
+        $sql = "SELECT * FROM login WHERE email='" . $email . "' AND password='" . $password . "'";
+        $result = $con->query($sql);
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $_SESSION["name"] = $row['name'];
+            }
+            header("Location: ../home.php");
+            exit();
+        } else {
+            header("Location: ../index.php?message=Email or Password is wrong");
+            exit();
         }
-        header("Location: ../home.php");
-        exit();
-    } else {
-        header("Location: ../index.php?message=Email or Password is wrong");
-        exit();
+    } catch (mysqli_sql_exception $e) {
+        echo $e->getMessage();
     }
+
     $con->close();
 }
 
+//----------------------------------------------------------------------//
+/* Logging out */
 function logout()
 {
     session_unset();
