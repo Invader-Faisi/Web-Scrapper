@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Website: http://sourceforge.net/projects/simplehtmldom/
  * Additional projects: http://sourceforge.net/projects/debugobject/
@@ -42,7 +43,7 @@ define('HDOM_INFO_ENDSPACE', 7);
 defined('DEFAULT_TARGET_CHARSET') || define('DEFAULT_TARGET_CHARSET', 'UTF-8');
 defined('DEFAULT_BR_TEXT') || define('DEFAULT_BR_TEXT', "\r\n");
 defined('DEFAULT_SPAN_TEXT') || define('DEFAULT_SPAN_TEXT', ' ');
-defined('MAX_FILE_SIZE') || define('MAX_FILE_SIZE', 600000);
+defined('MAX_FILE_SIZE') || define('MAX_FILE_SIZE', 6000000);
 define('HDOM_SMARTY_AS_TEXT', 1);
 
 function file_get_html(
@@ -56,9 +57,11 @@ function file_get_html(
 	$target_charset = DEFAULT_TARGET_CHARSET,
 	$stripRN = true,
 	$defaultBRText = DEFAULT_BR_TEXT,
-	$defaultSpanText = DEFAULT_SPAN_TEXT)
-{
-	if($maxLen <= 0) { $maxLen = MAX_FILE_SIZE; }
+	$defaultSpanText = DEFAULT_SPAN_TEXT
+) {
+	if ($maxLen <= 0) {
+		$maxLen = MAX_FILE_SIZE;
+	}
 
 	$dom = new simple_html_dom(
 		null,
@@ -98,8 +101,8 @@ function str_get_html(
 	$target_charset = DEFAULT_TARGET_CHARSET,
 	$stripRN = true,
 	$defaultBRText = DEFAULT_BR_TEXT,
-	$defaultSpanText = DEFAULT_SPAN_TEXT)
-{
+	$defaultSpanText = DEFAULT_SPAN_TEXT
+) {
 	$dom = new simple_html_dom(
 		null,
 		$lowercase,
@@ -314,7 +317,9 @@ class simple_html_dom_node
 	function find_ancestor_tag($tag)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
 		if ($this->parent === null) {
 			return null;
@@ -420,13 +425,20 @@ class simple_html_dom_node
 		}
 
 		switch ($this->nodetype) {
-			case HDOM_TYPE_TEXT: return $this->dom->restore_noise($this->_[HDOM_INFO_TEXT]);
-			case HDOM_TYPE_COMMENT: return '';
-			case HDOM_TYPE_UNKNOWN: return '';
+			case HDOM_TYPE_TEXT:
+				return $this->dom->restore_noise($this->_[HDOM_INFO_TEXT]);
+			case HDOM_TYPE_COMMENT:
+				return '';
+			case HDOM_TYPE_UNKNOWN:
+				return '';
 		}
 
-		if (strcasecmp($this->tag, 'script') === 0) { return ''; }
-		if (strcasecmp($this->tag, 'style') === 0) { return ''; }
+		if (strcasecmp($this->tag, 'script') === 0) {
+			return '';
+		}
+		if (strcasecmp($this->tag, 'style') === 0) {
+			return '';
+		}
 
 		$ret = '';
 
@@ -477,7 +489,9 @@ class simple_html_dom_node
 			++$i;
 
 			// skip removed attribute
-			if ($val === null || $val === false) { continue; }
+			if ($val === null || $val === false) {
+				continue;
+			}
 
 			$ret .= $this->_[HDOM_INFO_SPACE][$i][0];
 
@@ -485,20 +499,24 @@ class simple_html_dom_node
 			if ($val === true) {
 				$ret .= $key;
 			} else {
-				switch ($this->_[HDOM_INFO_QUOTE][$i])
-				{
-					case HDOM_QUOTE_DOUBLE: $quote = '"'; break;
-					case HDOM_QUOTE_SINGLE: $quote = '\''; break;
-					default: $quote = '';
+				switch ($this->_[HDOM_INFO_QUOTE][$i]) {
+					case HDOM_QUOTE_DOUBLE:
+						$quote = '"';
+						break;
+					case HDOM_QUOTE_SINGLE:
+						$quote = '\'';
+						break;
+					default:
+						$quote = '';
 				}
 
 				$ret .= $key
-				. $this->_[HDOM_INFO_SPACE][$i][1]
-				. '='
-				. $this->_[HDOM_INFO_SPACE][$i][2]
-				. $quote
-				. $val
-				. $quote;
+					. $this->_[HDOM_INFO_SPACE][$i][1]
+					. '='
+					. $this->_[HDOM_INFO_SPACE][$i][2]
+					. $quote
+					. $val
+					. $quote;
 			}
 		}
 
@@ -509,7 +527,9 @@ class simple_html_dom_node
 	function find($selector, $idx = null, $lowercase = false)
 	{
 		$selectors = $this->parse_selector($selector);
-		if (($count = count($selectors)) === 0) { return array(); }
+		if (($count = count($selectors)) === 0) {
+			return array();
+		}
 		$found_keys = array();
 
 		// find each selector
@@ -517,8 +537,12 @@ class simple_html_dom_node
 			// The change on the below line was documented on the sourceforge
 			// code tracker id 2788009
 			// used to be: if (($levle=count($selectors[0]))===0) return array();
-			if (($levle = count($selectors[$c])) === 0) { return array(); }
-			if (!isset($this->_[HDOM_INFO_BEGIN])) { return array(); }
+			if (($levle = count($selectors[$c])) === 0) {
+				return array();
+			}
+			if (!isset($this->_[HDOM_INFO_BEGIN])) {
+				return array();
+			}
 
 			$head = array($this->_[HDOM_INFO_BEGIN] => 1);
 			$cmd = ' '; // Combinator
@@ -553,15 +577,20 @@ class simple_html_dom_node
 		}
 
 		// return nth-element or array
-		if (is_null($idx)) { return $found; }
-		elseif ($idx < 0) { $idx = count($found) + $idx; }
+		if (is_null($idx)) {
+			return $found;
+		} elseif ($idx < 0) {
+			$idx = count($found) + $idx;
+		}
 		return (isset($found[$idx])) ? $found[$idx] : null;
 	}
 
 	protected function seek($selector, &$ret, $parent_cmd, $lowercase = false)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
 		list($tag, $id, $class, $attributes, $cmb) = $selector;
 		$nodes = array();
@@ -585,39 +614,43 @@ class simple_html_dom_node
 			$nodes = array_slice($this->dom->nodes, $nodes_start, $nodes_count, true);
 		} elseif ($parent_cmd === '>') { // Child Combinator
 			$nodes = $this->children;
-		} elseif ($parent_cmd === '+'
+		} elseif (
+			$parent_cmd === '+'
 			&& $this->parent
-			&& in_array($this, $this->parent->children)) { // Next-Sibling Combinator
-				$index = array_search($this, $this->parent->children, true) + 1;
-				if ($index < count($this->parent->children))
-					$nodes[] = $this->parent->children[$index];
-		} elseif ($parent_cmd === '~'
+			&& in_array($this, $this->parent->children)
+		) { // Next-Sibling Combinator
+			$index = array_search($this, $this->parent->children, true) + 1;
+			if ($index < count($this->parent->children))
+				$nodes[] = $this->parent->children[$index];
+		} elseif (
+			$parent_cmd === '~'
 			&& $this->parent
-			&& in_array($this, $this->parent->children)) { // Subsequent Sibling Combinator
-				$index = array_search($this, $this->parent->children, true);
-				$nodes = array_slice($this->parent->children, $index);
+			&& in_array($this, $this->parent->children)
+		) { // Subsequent Sibling Combinator
+			$index = array_search($this, $this->parent->children, true);
+			$nodes = array_slice($this->parent->children, $index);
 		}
 
 		// Go throgh each element starting at this element until the end tag
 		// Note: If this element is a void tag, any previous void element is
 		// skipped.
-		foreach($nodes as $node) {
+		foreach ($nodes as $node) {
 			$pass = true;
 
 			// Skip root nodes
-			if(!$node->parent) {
+			if (!$node->parent) {
 				$pass = false;
 			}
 
 			// Handle 'text' selector
-			if($pass && $tag === 'text' && $node->tag === 'text') {
+			if ($pass && $tag === 'text' && $node->tag === 'text') {
 				$ret[array_search($node, $this->dom->nodes, true)] = 1;
 				unset($node);
 				continue;
 			}
 
 			// Skip if node isn't a child node (i.e. text nodes)
-			if($pass && !in_array($node, $node->parent->children, true)) {
+			if ($pass && !in_array($node, $node->parent->children, true)) {
 				$pass = false;
 			}
 
@@ -636,7 +669,9 @@ class simple_html_dom_node
 				// Note: Only consider the first ID (as browsers do)
 				$node_id = explode(' ', trim($node->attr['id']))[0];
 
-				if($id !== $node_id) { $pass = false; }
+				if ($id !== $node_id) {
+					$pass = false;
+				}
 			}
 
 			// Check if all class(es) exist
@@ -648,8 +683,8 @@ class simple_html_dom_node
 						$node_classes = array_map('strtolower', $node_classes);
 					}
 
-					foreach($class as $c) {
-						if(!in_array($c, $node_classes)) {
+					foreach ($class as $c) {
+						if (!in_array($c, $node_classes)) {
 							$pass = false;
 							break;
 						}
@@ -660,74 +695,81 @@ class simple_html_dom_node
 			}
 
 			// Check attributes
-			if ($pass
+			if (
+				$pass
 				&& $attributes !== ''
 				&& is_array($attributes)
-				&& !empty($attributes)) {
-					foreach($attributes as $a) {
-						list (
-							$att_name,
-							$att_expr,
-							$att_val,
-							$att_inv,
-							$att_case_sensitivity
-						) = $a;
+				&& !empty($attributes)
+			) {
+				foreach ($attributes as $a) {
+					list(
+						$att_name,
+						$att_expr,
+						$att_val,
+						$att_inv,
+						$att_case_sensitivity
+					) = $a;
 
-						// Handle indexing attributes (i.e. "[2]")
-						/**
-						 * Note: This is not supported by the CSS Standard but adds
-						 * the ability to select items compatible to XPath (i.e.
-						 * the 3rd element within it's parent).
-						 *
-						 * Note: This doesn't conflict with the CSS Standard which
-						 * doesn't work on numeric attributes anyway.
-						 */
-						if (is_numeric($att_name)
-							&& $att_expr === ''
-							&& $att_val === '') {
-								$count = 0;
+					// Handle indexing attributes (i.e. "[2]")
+					/**
+					 * Note: This is not supported by the CSS Standard but adds
+					 * the ability to select items compatible to XPath (i.e.
+					 * the 3rd element within it's parent).
+					 *
+					 * Note: This doesn't conflict with the CSS Standard which
+					 * doesn't work on numeric attributes anyway.
+					 */
+					if (
+						is_numeric($att_name)
+						&& $att_expr === ''
+						&& $att_val === ''
+					) {
+						$count = 0;
 
-								// Find index of current element in parent
-								foreach ($node->parent->children as $c) {
-									if ($c->tag === $node->tag) ++$count;
-									if ($c === $node) break;
-								}
-
-								// If this is the correct node, continue with next
-								// attribute
-								if ($count === (int)$att_name) continue;
+						// Find index of current element in parent
+						foreach ($node->parent->children as $c) {
+							if ($c->tag === $node->tag) ++$count;
+							if ($c === $node) break;
 						}
 
-						// Check attribute availability
-						if ($att_inv) { // Attribute should NOT be set
-							if (isset($node->attr[$att_name])) {
-								$pass = false;
-								break;
-							}
-						} else { // Attribute should be set
-							// todo: "plaintext" is not a valid CSS selector!
-							if ($att_name !== 'plaintext'
-								&& !isset($node->attr[$att_name])) {
-									$pass = false;
-									break;
-							}
+						// If this is the correct node, continue with next
+						// attribute
+						if ($count === (int)$att_name) continue;
+					}
+
+					// Check attribute availability
+					if ($att_inv) { // Attribute should NOT be set
+						if (isset($node->attr[$att_name])) {
+							$pass = false;
+							break;
 						}
-
-						// Continue with next attribute if expression isn't defined
-						if ($att_expr === '') continue;
-
-						// If they have told us that this is a "plaintext"
-						// search then we want the plaintext of the node - right?
-						// todo "plaintext" is not a valid CSS selector!
-						if ($att_name === 'plaintext') {
-							$nodeKeyValue = $node->text();
-						} else {
-							$nodeKeyValue = $node->attr[$att_name];
+					} else { // Attribute should be set
+						// todo: "plaintext" is not a valid CSS selector!
+						if (
+							$att_name !== 'plaintext'
+							&& !isset($node->attr[$att_name])
+						) {
+							$pass = false;
+							break;
 						}
+					}
 
-						if (is_object($debug_object)) {
-							$debug_object->debug_log(2,
-								'testing node: '
+					// Continue with next attribute if expression isn't defined
+					if ($att_expr === '') continue;
+
+					// If they have told us that this is a "plaintext"
+					// search then we want the plaintext of the node - right?
+					// todo "plaintext" is not a valid CSS selector!
+					if ($att_name === 'plaintext') {
+						$nodeKeyValue = $node->text();
+					} else {
+						$nodeKeyValue = $node->attr[$att_name];
+					}
+
+					if (is_object($debug_object)) {
+						$debug_object->debug_log(
+							2,
+							'testing node: '
 								. $node->tag
 								. ' for attribute: '
 								. $att_name
@@ -735,39 +777,40 @@ class simple_html_dom_node
 								. $att_val
 								. ' where nodes value is: '
 								. $nodeKeyValue
-							);
-						}
-
-						// If lowercase is set, do a case insensitive test of
-						// the value of the selector.
-						if ($lowercase) {
-							$check = $this->match(
-								$att_expr,
-								strtolower($att_val),
-								strtolower($nodeKeyValue),
-								$att_case_sensitivity
-							);
-						} else {
-							$check = $this->match(
-								$att_expr,
-								$att_val,
-								$nodeKeyValue,
-								$att_case_sensitivity
-							);
-						}
-
-						if (is_object($debug_object)) {
-							$debug_object->debug_log(2,
-								'after match: '
-								. ($check ? 'true' : 'false')
-							);
-						}
-
-						if (!$check) {
-							$pass = false;
-							break;
-						}
+						);
 					}
+
+					// If lowercase is set, do a case insensitive test of
+					// the value of the selector.
+					if ($lowercase) {
+						$check = $this->match(
+							$att_expr,
+							strtolower($att_val),
+							strtolower($nodeKeyValue),
+							$att_case_sensitivity
+						);
+					} else {
+						$check = $this->match(
+							$att_expr,
+							$att_val,
+							$nodeKeyValue,
+							$att_case_sensitivity
+						);
+					}
+
+					if (is_object($debug_object)) {
+						$debug_object->debug_log(
+							2,
+							'after match: '
+								. ($check ? 'true' : 'false')
+						);
+					}
+
+					if (!$check) {
+						$pass = false;
+						break;
+					}
+				}
 			}
 
 			// Found a match. Add to list and clear node
@@ -783,7 +826,9 @@ class simple_html_dom_node
 	protected function match($exp, $pattern, $value, $case_sensitivity)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) {$debug_object->debug_log_entry(1);}
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
 		if ($case_sensitivity === 'i') {
 			$pattern = strtolower($pattern);
@@ -828,7 +873,9 @@ class simple_html_dom_node
 	protected function parse_selector($selector_string)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
 		/**
 		 * Pattern of CSS selectors, modified from mootools (https://mootools.net/)
@@ -894,7 +941,9 @@ class simple_html_dom_node
 			$m[0] = trim($m[0]);
 
 			// Skip NoOps
-			if ($m[0] === '' || $m[0] === '/' || $m[0] === '//') { continue; }
+			if ($m[0] === '' || $m[0] === '/' || $m[0] === '//') {
+				continue;
+			}
 
 			// Convert to lowercase
 			if ($this->dom->lowercase) {
@@ -902,7 +951,9 @@ class simple_html_dom_node
 			}
 
 			// Extract classes
-			if ($m[3] !== '') { $m[3] = explode('.', $m[3]); }
+			if ($m[3] !== '') {
+				$m[3] = explode('.', $m[3]);
+			}
 
 			/* Extract attributes (pattern based on the pattern above!)
 
@@ -914,7 +965,7 @@ class simple_html_dom_node
 			 *
 			 * Note: Attributes can be negated with a "!" prefix to their name
 			 */
-			if($m[4] !== '') {
+			if ($m[4] !== '') {
 				preg_match_all(
 					"/\[@?(!?[\w:-]+)(?:([!*^$|~]?=)[\"']?(.*?)[\"']?)?(?:\s+?([iIsS])?)?\]/is",
 					trim($m[4]),
@@ -925,9 +976,11 @@ class simple_html_dom_node
 				// Replace element by array
 				$m[4] = array();
 
-				foreach($attributes as $att) {
+				foreach ($attributes as $att) {
 					// Skip empty matches
-					if(trim($att[0]) === '') { continue; }
+					if (trim($att[0]) === '') {
+						continue;
+					}
 
 					$inverted = (isset($att[1][0]) && $att[1][0] === '!');
 					$m[4][] = array(
@@ -948,7 +1001,9 @@ class simple_html_dom_node
 			}
 
 			// Clear Separator if it's a Selector List
-			if ($is_list = ($m[5] === ',')) { $m[5] = ''; }
+			if ($is_list = ($m[5] === ',')) {
+				$m[5] = '';
+			}
 
 			// Remove full match before adding to results
 			array_shift($m);
@@ -960,7 +1015,9 @@ class simple_html_dom_node
 			}
 		}
 
-		if (count($result) > 0) { $selectors[] = $result; }
+		if (count($result) > 0) {
+			$selectors[] = $result;
+		}
 		return $selectors;
 	}
 
@@ -970,21 +1027,29 @@ class simple_html_dom_node
 			return $this->convert_text($this->attr[$name]);
 		}
 		switch ($name) {
-			case 'outertext': return $this->outertext();
-			case 'innertext': return $this->innertext();
-			case 'plaintext': return $this->text();
-			case 'xmltext': return $this->xmltext();
-			default: return array_key_exists($name, $this->attr);
+			case 'outertext':
+				return $this->outertext();
+			case 'innertext':
+				return $this->innertext();
+			case 'plaintext':
+				return $this->text();
+			case 'xmltext':
+				return $this->xmltext();
+			default:
+				return array_key_exists($name, $this->attr);
 		}
 	}
 
 	function __set($name, $value)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
 		switch ($name) {
-			case 'outertext': return $this->_[HDOM_INFO_OUTER] = $value;
+			case 'outertext':
+				return $this->_[HDOM_INFO_OUTER] = $value;
 			case 'innertext':
 				if (isset($this->_[HDOM_INFO_TEXT])) {
 					return $this->_[HDOM_INFO_TEXT] = $value;
@@ -1003,9 +1068,12 @@ class simple_html_dom_node
 	function __isset($name)
 	{
 		switch ($name) {
-			case 'outertext': return true;
-			case 'innertext': return true;
-			case 'plaintext': return true;
+			case 'outertext':
+				return true;
+			case 'innertext':
+				return true;
+			case 'plaintext':
+				return true;
 		}
 		//no value attr: nowrap, checked selected...
 		return (array_key_exists($name, $this->attr)) ? true : isset($this->attr[$name]);
@@ -1013,13 +1081,17 @@ class simple_html_dom_node
 
 	function __unset($name)
 	{
-		if (isset($this->attr[$name])) { unset($this->attr[$name]); }
+		if (isset($this->attr[$name])) {
+			unset($this->attr[$name]);
+		}
 	}
 
 	function convert_text($text)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
 		$converted_text = $text;
 
@@ -1032,20 +1104,24 @@ class simple_html_dom_node
 		}
 
 		if (is_object($debug_object)) {
-			$debug_object->debug_log(3,
+			$debug_object->debug_log(
+				3,
 				'source charset: '
-				. $sourceCharset
-				. ' target charaset: '
-				. $targetCharset
+					. $sourceCharset
+					. ' target charaset: '
+					. $targetCharset
 			);
 		}
 
-		if (!empty($sourceCharset)
+		if (
+			!empty($sourceCharset)
 			&& !empty($targetCharset)
-			&& (strcasecmp($sourceCharset, $targetCharset) != 0)) {
+			&& (strcasecmp($sourceCharset, $targetCharset) != 0)
+		) {
 			// Check if the reported encoding could have been incorrect and the text is actually already UTF-8
 			if ((strcasecmp($targetCharset, 'UTF-8') == 0)
-				&& ($this->is_utf8($text))) {
+				&& ($this->is_utf8($text))
+			) {
 				$converted_text = $text;
 			} else {
 				$converted_text = iconv($sourceCharset, $targetCharset, $text);
@@ -1068,24 +1144,37 @@ class simple_html_dom_node
 
 	static function is_utf8($str)
 	{
-		$c = 0; $b = 0;
+		$c = 0;
+		$b = 0;
 		$bits = 0;
 		$len = strlen($str);
-		for($i = 0; $i < $len; $i++) {
+		for ($i = 0; $i < $len; $i++) {
 			$c = ord($str[$i]);
-			if($c > 128) {
-				if(($c >= 254)) { return false; }
-				elseif($c >= 252) { $bits = 6; }
-				elseif($c >= 248) { $bits = 5; }
-				elseif($c >= 240) { $bits = 4; }
-				elseif($c >= 224) { $bits = 3; }
-				elseif($c >= 192) { $bits = 2; }
-				else { return false; }
-				if(($i + $bits) > $len) { return false; }
-				while($bits > 1) {
+			if ($c > 128) {
+				if (($c >= 254)) {
+					return false;
+				} elseif ($c >= 252) {
+					$bits = 6;
+				} elseif ($c >= 248) {
+					$bits = 5;
+				} elseif ($c >= 240) {
+					$bits = 4;
+				} elseif ($c >= 224) {
+					$bits = 3;
+				} elseif ($c >= 192) {
+					$bits = 2;
+				} else {
+					return false;
+				}
+				if (($i + $bits) > $len) {
+					return false;
+				}
+				while ($bits > 1) {
 					$i++;
 					$b = ord($str[$i]);
-					if($b < 128 || $b > 191) { return false; }
+					if ($b < 128 || $b > 191) {
+						return false;
+					}
 					$bits--;
 				}
 			}
@@ -1152,7 +1241,6 @@ class simple_html_dom_node
 					}
 				}
 			}
-
 		}
 
 		// Future enhancement:
@@ -1196,7 +1284,7 @@ class simple_html_dom_node
 		}
 
 		if (is_array($class)) {
-			foreach($class as $c) {
+			foreach ($class as $c) {
 				if (isset($this->class)) {
 					if ($this->hasClass($c)) {
 						continue;
@@ -1294,11 +1382,11 @@ class simple_html_dom_node
 
 		if ($nidx !== false && $cidx !== false && $didx !== false) {
 
-			foreach($node->children as $child) {
+			foreach ($node->children as $child) {
 				$node->removeChild($child);
 			}
 
-			foreach($node->nodes as $entity) {
+			foreach ($node->nodes as $entity) {
 				$enidx = array_search($entity, $node->nodes, true);
 				$edidx = array_search($entity, $node->dom->nodes, true);
 
@@ -1313,7 +1401,6 @@ class simple_html_dom_node
 			unset($this->dom->nodes[$didx]);
 
 			$node->clear();
-
 		}
 	}
 
@@ -1382,7 +1469,6 @@ class simple_html_dom_node
 		$node->parent($this);
 		return $node;
 	}
-
 }
 
 class simple_html_dom
@@ -1465,8 +1551,8 @@ class simple_html_dom
 		$stripRN = true,
 		$defaultBRText = DEFAULT_BR_TEXT,
 		$defaultSpanText = DEFAULT_SPAN_TEXT,
-		$options = 0)
-	{
+		$options = 0
+	) {
 		if ($str) {
 			if (preg_match('/^http:\/\//i', $str) || is_file($str)) {
 				$this->load_file($str);
@@ -1501,8 +1587,8 @@ class simple_html_dom
 		$stripRN = true,
 		$defaultBRText = DEFAULT_BR_TEXT,
 		$defaultSpanText = DEFAULT_SPAN_TEXT,
-		$options = 0)
-	{
+		$options = 0
+	) {
 		global $debug_object;
 
 		// prepare
@@ -1535,7 +1621,7 @@ class simple_html_dom
 		// strip out server side scripts
 		$this->remove_noise("'(<\?)(.*?)(\?>)'s", true);
 
-		if($options & HDOM_SMARTY_AS_TEXT) { // Strip Smarty scripts
+		if ($options & HDOM_SMARTY_AS_TEXT) { // Strip Smarty scripts
 			$this->remove_noise("'(\{\w)(.*?)(\})'s", true);
 		}
 
@@ -1553,7 +1639,7 @@ class simple_html_dom
 	{
 		$args = func_get_args();
 
-		if(($doc = call_user_func_array('file_get_contents', $args)) !== false) {
+		if (($doc = call_user_func_array('file_get_contents', $args)) !== false) {
 			$this->load($doc, true);
 		} else {
 			return false;
@@ -1573,7 +1659,9 @@ class simple_html_dom
 	function save($filepath = '')
 	{
 		$ret = $this->root->innertext();
-		if ($filepath !== '') { file_put_contents($filepath, $ret, LOCK_EX); }
+		if ($filepath !== '') {
+			file_put_contents($filepath, $ret, LOCK_EX);
+		}
 		return $ret;
 	}
 
@@ -1621,10 +1709,11 @@ class simple_html_dom
 	}
 
 	protected function prepare(
-		$str, $lowercase = true,
+		$str,
+		$lowercase = true,
 		$defaultBRText = DEFAULT_BR_TEXT,
-		$defaultSpanText = DEFAULT_SPAN_TEXT)
-	{
+		$defaultSpanText = DEFAULT_SPAN_TEXT
+	) {
 		$this->clear();
 
 		$this->doc = trim($str);
@@ -1642,7 +1731,9 @@ class simple_html_dom
 		$this->root->_[HDOM_INFO_BEGIN] = -1;
 		$this->root->nodetype = HDOM_TYPE_ROOT;
 		$this->parent = $this->root;
-		if ($this->size > 0) { $this->char = $this->doc[0]; }
+		if ($this->size > 0) {
+			$this->char = $this->doc[0];
+		}
 	}
 
 	protected function parse()
@@ -1651,7 +1742,7 @@ class simple_html_dom
 			// Read next tag if there is no text between current position and the
 			// next opening tag.
 			if (($s = $this->copy_until_char('<')) === '') {
-				if($this->read_tag()) {
+				if ($this->read_tag()) {
 					continue;
 				} else {
 					return true;
@@ -1678,9 +1769,10 @@ class simple_html_dom
 			if ($success) {
 				$charset = $matches[1];
 				if (is_object($debug_object)) {
-					$debug_object->debug_log(2,
+					$debug_object->debug_log(
+						2,
 						'header content-type found charset of: '
-						. $charset
+							. $charset
 					);
 				}
 			}
@@ -1693,9 +1785,10 @@ class simple_html_dom
 			if (!empty($el)) {
 				$fullvalue = $el->content;
 				if (is_object($debug_object)) {
-					$debug_object->debug_log(2,
+					$debug_object->debug_log(
+						2,
 						'meta content-type tag found'
-						. $fullvalue
+							. $fullvalue
 					);
 				}
 
@@ -1713,7 +1806,8 @@ class simple_html_dom
 						// character set, research says that it's typically
 						// ISO-8859-1
 						if (is_object($debug_object)) {
-							$debug_object->debug_log(2,
+							$debug_object->debug_log(
+								2,
 								'meta content-type tag couldn\'t be parsed. using iso-8859 default.'
 							);
 						}
@@ -1754,7 +1848,7 @@ class simple_html_dom
 				 */
 				$encoding = mb_detect_encoding(
 					$this->doc,
-					array( 'UTF-8', 'CP1252', 'ISO-8859-1' )
+					array('UTF-8', 'CP1252', 'ISO-8859-1')
 				);
 
 				if ($encoding === 'CP1252' || $encoding === 'ISO-8859-1') {
@@ -1788,10 +1882,12 @@ class simple_html_dom
 		// it instead.
 		if ((strtolower($charset) == 'iso-8859-1')
 			|| (strtolower($charset) == 'latin1')
-			|| (strtolower($charset) == 'latin-1')) {
+			|| (strtolower($charset) == 'latin-1')
+		) {
 			$charset = 'CP1252';
 			if (is_object($debug_object)) {
-				$debug_object->debug_log(2,
+				$debug_object->debug_log(
+					2,
 					'replacing ' . $charset . ' with CP1252 as its a superset'
 				);
 			}
@@ -1836,8 +1932,10 @@ class simple_html_dom
 			if ($parent_lower !== $tag_lower) {
 				// Parent tag does not have to be closed necessarily (optional closing tag)
 				// Current tag is a block tag, so it may close an ancestor
-				if (isset($this->optional_closing_tags[$parent_lower])
-					&& isset($this->block_tags[$tag_lower])) {
+				if (
+					isset($this->optional_closing_tags[$parent_lower])
+					&& isset($this->block_tags[$tag_lower])
+				) {
 
 					$this->parent->_[HDOM_INFO_END] = 0;
 					$org_parent = $this->parent;
@@ -1846,7 +1944,7 @@ class simple_html_dom
 					// Stop at root node
 					while (($this->parent->parent)
 						&& strtolower($this->parent->tag) !== $tag_lower
-					){
+					) {
 						$this->parent = $this->parent->parent;
 					}
 
@@ -1926,7 +2024,9 @@ class simple_html_dom
 				$node->tag = 'unknown';
 			}
 
-			if ($this->char === '>') { $node->_[HDOM_INFO_TEXT] .= '>'; }
+			if ($this->char === '>') {
+				$node->_[HDOM_INFO_TEXT] .= '>';
+			}
 
 			$this->link_nodes($node, true);
 			$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
@@ -1954,7 +2054,9 @@ class simple_html_dom
 			}
 
 			// Next char closes current tag, add and be done with it.
-			if ($this->char === '>') { $node->_[HDOM_INFO_TEXT] .= '>'; }
+			if ($this->char === '>') {
+				$node->_[HDOM_INFO_TEXT] .= '>';
+			}
 			$this->link_nodes($node, false);
 			$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 			return true;
@@ -2031,7 +2133,9 @@ class simple_html_dom
 
 				$name = $this->restore_noise($name); // might be a noisy name
 
-				if ($this->lowercase) { $name = strtolower($name); }
+				if ($this->lowercase) {
+					$name = strtolower($name);
+				}
 
 				if ($this->char === '=') { // attribute with value
 					$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
@@ -2040,7 +2144,9 @@ class simple_html_dom
 					//no value attr: nowrap, checked selected...
 					$node->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_NO;
 					$node->attr[$name] = true;
-					if ($this->char != '>') { $this->char = $this->doc[--$this->pos]; } // prev
+					if ($this->char != '>') {
+						$this->char = $this->doc[--$this->pos];
+					} // prev
 				}
 
 				$node->_[HDOM_INFO_SPACE][] = $space;
@@ -2157,7 +2263,9 @@ class simple_html_dom
 		$len = strspn($this->doc, $chars, $pos);
 		$this->pos += $len;
 		$this->char = ($this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
-		if ($len === 0) { return ''; }
+		if ($len === 0) {
+			return '';
+		}
 		return substr($this->doc, $pos, $len);
 	}
 
@@ -2172,7 +2280,9 @@ class simple_html_dom
 
 	protected function copy_until_char($char)
 	{
-		if ($this->char === null) { return ''; }
+		if ($this->char === null) {
+			return '';
+		}
 
 		if (($pos = strpos($this->doc, $char, $this->pos)) === false) {
 			$ret = substr($this->doc, $this->pos, $this->size - $this->pos);
@@ -2181,7 +2291,9 @@ class simple_html_dom
 			return $ret;
 		}
 
-		if ($pos === $this->pos) { return ''; }
+		if ($pos === $this->pos) {
+			return '';
+		}
 
 		$pos_old = $this->pos;
 		$this->char = $this->doc[$pos];
@@ -2192,7 +2304,9 @@ class simple_html_dom
 	protected function remove_noise($pattern, $remove_tag = false)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
 		$count = preg_match_all(
 			$pattern,
@@ -2224,7 +2338,9 @@ class simple_html_dom
 	function restore_noise($text)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
 		while (($pos = strpos($text, '___noise___')) !== false) {
 			// Sometimes there is a broken piece of markup, and we don't GET the
@@ -2235,11 +2351,11 @@ class simple_html_dom
 			// malicious software
 			if (strlen($text) > $pos + 15) {
 				$key = '___noise___'
-				. $text[$pos + 11]
-				. $text[$pos + 12]
-				. $text[$pos + 13]
-				. $text[$pos + 14]
-				. $text[$pos + 15];
+					. $text[$pos + 11]
+					. $text[$pos + 12]
+					. $text[$pos + 13]
+					. $text[$pos + 14]
+					. $text[$pos + 15];
 
 				if (is_object($debug_object)) {
 					$debug_object->debug_log(2, 'located key of: ' . $key);
@@ -2247,21 +2363,21 @@ class simple_html_dom
 
 				if (isset($this->noise[$key])) {
 					$text = substr($text, 0, $pos)
-					. $this->noise[$key]
-					. substr($text, $pos + 16);
+						. $this->noise[$key]
+						. substr($text, $pos + 16);
 				} else {
 					// do this to prevent an infinite loop.
 					$text = substr($text, 0, $pos)
-					. 'UNDEFINED NOISE FOR KEY: '
-					. $key
-					. substr($text, $pos + 16);
+						. 'UNDEFINED NOISE FOR KEY: '
+						. $key
+						. substr($text, $pos + 16);
 				}
 			} else {
 				// There is no valid key being given back to us... We must get
 				// rid of the ___noise___ or we will have a problem.
 				$text = substr($text, 0, $pos)
-				. 'NO NUMERIC NOISE KEY'
-				. substr($text, $pos + 11);
+					. 'NO NUMERIC NOISE KEY'
+					. substr($text, $pos + 11);
 			}
 		}
 		return $text;
@@ -2270,9 +2386,11 @@ class simple_html_dom
 	function search_noise($text)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if (is_object($debug_object)) {
+			$debug_object->debug_log_entry(1);
+		}
 
-		foreach($this->noise as $noiseElement) {
+		foreach ($this->noise as $noiseElement) {
 			if (strpos($noiseElement, $text) !== false) {
 				return $noiseElement;
 			}

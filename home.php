@@ -46,7 +46,7 @@
     </nav>
 
     <div class="container mt-3 mb-5">
-        <form class="mb-3" method="POST" action="server/product_controller.php">
+        <form class="mb-3" id="aliexpForm">
             <div class="input-group">
                 <input type="hidden" name="page" id="page" value="aliexp">
                 <span class="input-group-text" id="search">Ali Express</span>
@@ -97,7 +97,7 @@
                                     html += '<div class = "col"><div class = "card h-100 shadow-sm">';
                                     html += '<img src="images/' + product.Image + '" class="card-img-top" alt="..." id="prod_img"> ';
                                     html += '<div class="card-body">';
-                                    html += '<div class="clearfix mb-3">Price<span class="float-end price-hp" id="prod_price">' + product.Price + '&euro;</span> </div>';
+                                    html += '<div class="clearfix mb-3"><span class="float-start badge rounded-pill bg-info">Daraz.pk</span><span class="float-end price-hp" id="prod_price">PKR' + product.Price + '</span> </div>';
                                     html += '<h5 class="card-title" id="prod_name">' + product.Product + '</h5>';
                                     html += '<div class="text-center my-4"> <button class="btn btn-warning" id="addToDatabase">Add To Database</button> </div>';
                                     html += '</div></div></div>';
@@ -109,7 +109,7 @@
                                 html += '<div class="alert alert-danger text-center fw-bold" role="alert">' + response.data + '</div>';
                                 $('#card').html(html);
                             }
-
+                            $('#daraz_product').val('');
                         },
                         error: function(x, e) {
                             if (x.status == 0) {
@@ -146,9 +146,64 @@
 
 
 
+            /*------------------------- Searching product from Ali Exp page ---------------------------------------*/
+            $(document).ready(function() {
 
+                $('#aliexpForm').submit(function(e) {
+                    if ($.trim($('#aliexp_product').val()) == '') {
+                        alert('Input can not be left blank');
+                    } else {
+                        e.preventDefault();
+                        var formData = $(this).serializeArray();
+                        $.ajax({
+                            url: 'server/product_controller.php',
+                            method: 'POST',
+                            data: formData,
+                            dataType: 'json',
+                            success: function(response) {
+                                var html = '';
+                                if (response.status === 'success') {
+                                    productList = response.data;
+                                    for (var i = 0; i < productList.length; i++) {
+                                        var product = productList[i];
+                                        html += '<div class = "col"><div class = "card h-100 shadow-sm">';
+                                        html += '<img src="images/' + product.Image + '" class="card-img-top" alt="..." id="prod_img"> ';
+                                        html += '<div class="card-body">';
+                                        html += '<div class="clearfix mb-3"><span class="float-start badge rounded-pill bg-success">Ali Express</span> <span class="float-end price-hp" id="prod_price">' + product.Price + '</span> </div>';
+                                        html += '<h5 class="card-title" id="prod_name">' + product.Product + '</h5>';
+                                        html += '<div class="text-center my-4"> <button class="btn btn-warning" id="addToDatabase">Add To Database</button> </div>';
+                                        html += '</div></div></div>';
+                                    }
+                                    $('#card').empty();
+                                    $('#card').html(html);
+                                } else {
+                                    $('#card').empty();
+                                    html += '<div class="alert alert-danger text-center fw-bold" role="alert">' + response.data + '</div>';
+                                    $('#card').html(html);
+                                }
+                                $('#aliexp_product').val('');
+                            },
+                            error: function(x, e) {
+                                if (x.status == 0) {
+                                    alert('You are offline!!\n Please Check Your Network.');
+                                } else if (x.status == 404) {
+                                    alert('Requested URL not found.');
+                                } else if (x.status == 500) {
+                                    alert('Internel Server Error.');
+                                } else if (e == 'parsererror') {
+                                    alert('Error.\nParsing JSON Request failed.');
+                                } else if (e == 'timeout') {
+                                    alert('Request Time out.');
+                                } else {
+                                    alert('Unknow Error.\n' + x.responseText);
+                                }
+                            }
+                        });
+                    }
 
+                });
 
+            });
             /*------------------------- End ---------------------------------------*/
         });
     </script>
