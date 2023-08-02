@@ -139,6 +139,11 @@ function AddProduct($title, $price, $image, $cat, $page)
                 'data' => 'Product Inserted to Database Successfully'
             );
             return $response;
+        } else {
+            $response = array(
+                'data' => 'Something went wrong with data base'
+            );
+            return $response;
         }
     } catch (mysqli_sql_exception $e) {
         if ($e->getCode() == 1062) {

@@ -2,12 +2,20 @@
 include_once 'connection.php';
 
 //----------------------------------------------------------------------//
-/* Handling Login */
+/* Handling Form */
 
 if (isset($_POST['submit'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    login($email, $password);
+    if ($_POST['form'] == 'login') {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        login($email, $password);
+    } else if ($_POST['form'] == 'register') {
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $mobile = $_POST['mobile'];
+        $password = $_POST['password'];
+        Register($name, $email, $mobile, $password);
+    }
 }
 
 //----------------------------------------------------------------------//
@@ -19,7 +27,26 @@ if (isset($_GET['action'])) {
     }
 }
 
+//----------------------------------------------------------------------//
+/* Registeration */
+function Register($name, $email, $mobile, $password)
+{
+    $con = connection();
+    try {
+        $sql = "INSERT INTO users (name, email, mobile, password ) VALUES ('" . $name . "', '" . $email . "', '" . $mobile . "', '" . $password . "')";
+        if ($con->query($sql) === true) {
+            header("Location: ../index.php?message=Register Successfully. Please Login now");
+            exit();
+        } else {
+            header("Location: ../index.php?message=Something went wrong with data");
+            exit();
+        }
+    } catch (mysqli_sql_exception $e) {
+        echo $e->getMessage();
+    }
 
+    $con->close();
+}
 
 //----------------------------------------------------------------------//
 /* Logging in */
@@ -27,7 +54,7 @@ function login($email, $password)
 {
     $con = connection();
     try {
-        $sql = "SELECT * FROM login WHERE email='" . $email . "' AND password='" . $password . "'";
+        $sql = "SELECT * FROM users WHERE email='" . $email . "' AND password='" . $password . "'";
         $result = $con->query($sql);
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
